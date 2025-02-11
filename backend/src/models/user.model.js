@@ -55,9 +55,8 @@ UserSchema.methods.generateAccessToken = function () {
     return jsonwebtoken.sign(
         {
             _id: this._id,
-            username: this.username,
-            email: this.email,
-            fullname: this.fullname,
+            name: this.name,
+            email: this.email,            
         },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }

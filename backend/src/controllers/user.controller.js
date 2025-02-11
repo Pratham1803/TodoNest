@@ -86,7 +86,15 @@ const registerUser = asyncHandler(async (req, res, next) => {
         );
 });
 
-const loginUser = asyncHandler(async (req, res, next) => {});
+const loginUser = asyncHandler(async (req, res, next) => {
+    // Steps to login a user
+    // 1. Get user data
+    // 2. Validate user data, check user exists or not
+    // 3. validate password
+    // 4. Generate access and refresh tokens
+    // 5. Send response with tokens
+
+});
 const logOutUser = asyncHandler(async (req, res, next) => {});
 const refreshAccessToken = asyncHandler(async (req, res, next) => {});
 

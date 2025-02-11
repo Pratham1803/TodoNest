@@ -16,15 +16,10 @@ import { verifyJWT } from '../middlewares/auth.middleware.js';
 const router = Router();
 
 // Public route: User registration (POST request)
-router.route('/register').post((req, res, next) => {
-    console.log(
-        `name: ${req.body.name}, email: ${req.body.email}, password: ${req.body.password}`
-    );
-    next();
-}, registerUser);
+router.route('/register').post(registerUser);
 
 // Public route: User login (POST request)
-router.route('/login').post(loginUser);
+router.route('/login').post(verifyJWT, loginUser);
 
 // Secured route: User logout (POST request) - Requires authentication
 router.route('/logout').post(verifyJWT, logOutUser);
