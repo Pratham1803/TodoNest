@@ -1,14 +1,22 @@
-const express = require('express')
+const express = require('express');
 const router = express.Router();
-const { registerUserHandler, loginUserHandler } = require('../controllers/user.controller')
+const {
+    registerUserHandler,
+    loginUserHandler,
+    logOutUserHandler,
+    refreshAccessToken,
+} = require('../controllers/user.controller');
 const validateToken = require('../middlewares/auth.middleware');
 
-router.post('/register', registerUserHandler)
-router.post('/login', loginUserHandler)
+router.post('/register', registerUserHandler);
+router.post('/login', loginUserHandler);
 
 // secured routes
 router.get('/', validateToken, (req, res) => {
     return res.send('Hello world');
-})
+});
 
-module.exports = router
+router.post('/logout', validateToken, logOutUserHandler);
+router.post('/refresh-token', refreshAccessToken);
+
+module.exports = router;

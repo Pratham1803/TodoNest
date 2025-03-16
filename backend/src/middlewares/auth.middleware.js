@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken')
-const asyncHandler = require('../utils/asyncHandler')
-const ApiError = require('../utils/ApiError')
+const jwt = require('jsonwebtoken');
+const asyncHandler = require('../utils/asyncHandler');
+const ApiError = require('../utils/ApiError');
 const User = require('../models/user.model');
 
 const validateToken = asyncHandler(async (req, _, next) => {
@@ -10,17 +10,22 @@ const validateToken = asyncHandler(async (req, _, next) => {
         // check user exists or not with decoded it
         // add verified user with request
 
-        const accessToken = req
-            .cookies?.accessToken ||
+        const accessToken =
+            req.cookies?.accessToken ||
             req.header('Authorization')?.replace('Bearer ', '');
 
         if (!accessToken) {
             throw new ApiError(401, 'Unauthorized Request');
         }
 
-        const decodedToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+        const decodedToken = jwt.verify(
+            accessToken,
+            process.env.ACCESS_TOKEN_SECRET
+        );
 
-        const user = await User.findById(decodedToken?._id).select(' -password -refreshToken');
+        const user = await User.findById(decodedToken?._id).select(
+            ' -password -refreshToken'
+        );
 
         if (!user) {
             throw new ApiError(401, 'Invalid Access Token');
