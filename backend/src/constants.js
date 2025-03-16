@@ -1,1 +1,2 @@
-export const DB_NAME = "todoDB";
+const DB_NAME = "todoDB";
+module.exports = { DB_NAME }

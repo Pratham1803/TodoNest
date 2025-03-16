@@ -1,10 +1,17 @@
-// A higher-order function to handle asynchronous route handlers
-const asyncHandler = (requestHandler) => {
-  return (req, res, next) => {
-    // Ensures that any errors in the async function are caught and passed to the Express error handler
-    Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err));
-  };
-};
+const asyncHandler = (requestHandler) => async (req, res, next) => {
+    try {
+        await requestHandler(req, res, next);
+    } catch (error) {
+        console.log(`Error: ${error.message}`);
 
-// Exporting asyncHandler for use in other parts of the application
-export { asyncHandler };
+        res
+            .status(error.statusCode || 500)
+            .json({
+                success: false,
+                message: error.message,
+                stack: error.stack
+            })
+    }
+}
+
+module.exports = asyncHandler

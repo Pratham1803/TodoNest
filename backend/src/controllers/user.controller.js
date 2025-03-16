@@ -1,101 +1,99 @@
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { ApiError } from '../utils/ApiError.js';
-import { ApiResponse } from '../utils/ApiResponse.js';
-import { User } from '../models/user.model.js';
-import jwt from 'jsonwebtoken';
+const mongoose = require('mongoose');
+const User = require('../models/user.model')
+const ApiResponse = require('../utils/ApiResponse')
+const ApiError = require('../utils/ApiError')
+const asyncHandler = require('../utils/asyncHandler')
 
 const options = {
     httpOnly: true,
-    secure: true,
-};
+    secure: true
+}
 
-const generateAccessAndRefreshToken = async (userID) => {
+const generateAccessAndRefreshToken = async (userId) => {
     try {
-        const user = await User.findById(userID);
+        const user = await User.findById(userId);
+
         const accessToken = user.generateAccessToken();
-        const refreshToken = user.generateRefreshToken();
+        const refreshToken = user.generateRefreshToekn();
 
         user.refreshToken = refreshToken;
-
         await user.save({ validateBeforeSave: false });
 
-        return { accessToken, refreshToken };
+        return { accessToken, refreshToken }
     } catch (error) {
-        throw new ApiError(
-            500,
-            `something went wrong, while generating access and refresh token, ${error.message}`
-        );
+        console.log(`Error is Generating Tokens:\n ${error}`);
+        throw new ApiError(500, 'something went wrong, while generating access and refresh token')
     }
-};
+}
 
-const registerUser = asyncHandler(async (req, res, next) => {
-    console.log('registerUser');
+const registerUserHandler = asyncHandler(async (req, res) => {
+    // data collect
+    // verify
+    // store
+    // send response
 
-    // Steps to register a user
-    // 1. Get user input
-    // 2. Validate user input
-    // 3. Check if user already exists
-    // 4. Create a new user
-    // 5. Generate access and refresh tokens
-    // 6. Send response with tokens
-
-    // 1. Get user input
     const { name, email, password } = req.body;
 
-    // 2. Validate user input
-    if (!name || !email || !password) {
-        console.log(`name: ${name}, email: ${email}, password: ${password}`);
-
-        throw new ApiError(400, 'Please provide name, email, and password');
+    if (!(name || email || password)) {
+        throw new ApiError(400, 'Name, Email and Password required');
     }
 
-    // 3. Check if user already exists
-    const user = await User.findOne({ email });
-    if (user) {
-        return next(new ApiError(400, 'User already exists with this email'));
+    const isUserExists = await User.findOne({ email: email })
+
+    if (isUserExists) {
+        throw new ApiError(409, "User With same Email id already exists");
     }
 
-    // 4. Create a new user
-    const newUser = await User.create({ name, email, password });
-    console.log('newUser', newUser._id);
 
-    // 5. Generate access and refresh tokens
-    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-        newUser._id
-    );
+    const newUser = await User.create({
+        name, email, password,
+    })
 
-    // 6. Send response with tokens
-    if (!newUser) {
-        throw new ApiError(500, 'User not created');
-    }
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(newUser);
 
     return res
         .status(200)
         .cookie('accessToken', accessToken, options)
         .cookie('refreshToken', refreshToken, options)
-        .json(
-            new ApiResponse(
-                200,
-                {
-                    user: newUser,
-                    accessToken,
-                    refreshToken,
-                },
-                'User registered successfully'
-            )
-        );
+        .json(new ApiResponse(200, { newUser, 'accessToken': accessToken, refreshToken: refreshToken }, "User Registered Succesfully"))
 });
 
-const loginUser = asyncHandler(async (req, res, next) => {
-    // Steps to login a user
-    // 1. Get user data
-    // 2. Validate user data, check user exists or not
-    // 3. validate password
-    // 4. Generate access and refresh tokens
-    // 5. Send response with tokens
+const loginUserHandler = async (req, res) => {
+    // collect data and verify it
+    // check in data base that user exists or not
+    // check password
+    // generate tokens
+    // RETURN RES 
 
-});
-const logOutUser = asyncHandler(async (req, res, next) => {});
-const refreshAccessToken = asyncHandler(async (req, res, next) => {});
+    const { email, password } = req.body;
 
-export { registerUser, loginUser, logOutUser, refreshAccessToken };
+    if (!(email, password)) {
+        throw new ApiError(400, "email id and password is required!!");
+    }
+
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+        throw new ApiError(404, 'User not found');
+    }
+
+    const isPasswordValid = await user.isPasswordCorrect(password);
+
+    if (!isPasswordValid) {
+        throw new ApiError(401, 'Invalid user credentials');
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
+
+    return res
+        .status(200)
+        .cookie('accessToken', accessToken, options)
+        .cookie('refreshToken', refreshToken, options)
+        .json({
+            user,
+            'accessToken': accessToken,
+            'refreshToken': refreshToken
+        });
+}
+
+module.exports = { registerUserHandler, loginUserHandler }
