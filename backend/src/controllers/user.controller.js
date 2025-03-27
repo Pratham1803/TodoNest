@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const User = require('../models/user.model');
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');

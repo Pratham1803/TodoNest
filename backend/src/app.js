@@ -16,4 +16,7 @@ app.use(logReq);
 const userRoute = require('./routes/user.routes');
 app.use('/todo/api/v1/users', userRoute);
 
+const todoRoute = require('./routes/todo.routes');
+app.use('/todo/api/v1/todo', todoRoute);
+
 module.exports = app;
