@@ -1,6 +1,3 @@
-Here’s a **README.md** for your project:  
-
-```markdown
 # Todo App  
 
 A feature-rich To-Do application built with **Flutter** (frontend) and **Node.js** (backend). This app allows users to manage their daily tasks with ease while providing a modern and scalable full-stack solution.  
@@ -89,18 +86,3 @@ A feature-rich To-Do application built with **Flutter** (frontend) and **Node.js
 > Add screenshots of the app UI to showcase features like login, task list, and CRUD operations.  
 
 ---
-
-## Contributing  
-Contributions are welcome! Feel free to open an issue or submit a pull request.  
-
----
-
-## License  
-This project is licensed under the [MIT License](LICENSE).  
-
----
-
-Happy Coding! 🚀
-```  
-
-Let me know if you'd like to customize it further!

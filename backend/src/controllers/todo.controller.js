@@ -43,6 +43,7 @@ const getSingleToDoHandler = asyncHandler(async (req, res) => {
     const id = req.user._id;
     const todoId = req.params.id;
     const todo = await Todo.find({ _id: todoId, userId: id });
+console.log(`id is : ${id}`);
 
     if(todo.length === 0){
         throw new ApiError(404, 'Todo not found');
@@ -52,7 +53,15 @@ const getSingleToDoHandler = asyncHandler(async (req, res) => {
 });
 
 const deleteToDoHandler = asyncHandler(async (req, res) => {
+    const id = req.user._id;
+    const todoId = req.params.id;
+    const todo = await Todo.deleteOne({ _id: todoId, userId: id });
 
+    if(todo.length === 0){
+        throw new ApiError(404, 'Todo not found');
+    }
+    
+    return res.status(200).json(new ApiResponse(200, todo, 'Sent todos'));
 });
 
 const updateToDoHandler = asyncHandler(async (req, res) => {});
